@@ -1,6 +1,5 @@
 var gulp = require('gulp'),
 	concat = require('gulp-concat'),
-	mbf = require('main-bower-files'),
 	less = require('gulp-less'),
     jshint = require('gulp-jshint'),
     karma = require('karma').server,
@@ -15,7 +14,7 @@ var paths = {
 };
 
 // vendor
-gulp.task('vendor', function () {
+/*gulp.task('vendor', function () {
     var jsRegex = (/.*\.js$/i),
         cssRegex = (/.*\.css$/i);
 
@@ -28,10 +27,10 @@ gulp.task('vendor', function () {
         .pipe(gulp.dest('public/stylesheets'));
 
     // accommodate bootstrap css source mapping
-    gulp.src('./bower_components/**/bootstrap.css.map')
+    gulp.src('./bower_components*//**//*bootstrap.css.map')
         .pipe(concat('bootstrap.css.map'))
         .pipe(gulp.dest('public/stylesheets'));
-});
+});*/
 
 // app
 gulp.task('app', function () {
@@ -81,7 +80,7 @@ gulp.task('watch', function(){
 });
 
 // build
-gulp.task('build', ['vendor', 'app', 'less', 'lint']);
+gulp.task('build', ['app', 'less', 'lint']);
 
 // default gulp task
 gulp.task('default', ['test', 'build', 'serve', 'watch']);
