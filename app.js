@@ -15,6 +15,10 @@ app.set('views', path.join(__dirname, 'views'));
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
+// use connect middleware for livereload if development
+if (process.env.NODE_ENV === 'development') {
+    app.use(require('connect-livereload')());
+}
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));

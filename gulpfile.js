@@ -4,10 +4,18 @@ var gulp = require('gulp'),
 	less = require('gulp-less'),
     jshint = require('gulp-jshint'),
     karma = require('karma').server,
-    nodemon = require('gulp-nodemon');
+    nodemon = require('gulp-nodemon'),
+    livereload = require('gulp-livereload');
+
+var paths = {
+    styles: ['./client/stylesheets/*.less'],
+    scripts: ['./client/app/**/*.js'],
+    html: ['./client/app/**/*.html'],
+    tests: ['./tests/*.js']
+};
 
 // vendor
-gulp.task('bower', function () {
+gulp.task('vendor', function () {
     var jsRegex = (/.*\.js$/i),
         cssRegex = (/.*\.css$/i);
 
@@ -26,27 +34,28 @@ gulp.task('bower', function () {
 });
 
 // app
-gulp.task('app', ['bower'], function () {
-    gulp.src('./src/app/**/*.js')
+gulp.task('app', function () {
+    gulp.src(paths.scripts)
         .pipe(concat('app.js'))
         .pipe(gulp.dest('public/javascripts'));
 });
 
+// styles
 gulp.task('less', function () {
-    return gulp.src('src/styles/style.less')
+    return gulp.src(paths.styles)
         .pipe(less())
         .pipe(gulp.dest('public/stylesheets/'));
 });
 
 // code linting
-gulp.task('jshint', function () {
-    return gulp.src(['src/app/**/*.js'])
+gulp.task('lint', function () {
+    return gulp.src(paths.scripts)
         .pipe(jshint(process.env.NODE_ENV === 'development' ? { devel: true, debug: true } : {} ))
         .pipe(jshint.reporter('jshint-stylish'))
         .pipe(jshint.reporter('fail'));
 });
 
-// test runner
+// tests
 gulp.task('test', function (done) {
     karma.start({
         configFile: __dirname + '/karma.conf.js',
@@ -55,13 +64,24 @@ gulp.task('test', function (done) {
 });
 
 // dev server
-gulp.task('dev', ['jshint', 'app', 'less'], function () {
-    /*nodemon({ script: 'app.js', ext: 'html js', ignore: [] })
-        .on('change', ['jshint', 'app', 'less'])
-        .on('restart', function () {
-            console.log('restarted!')
-        });*/
-    nodemon({ script: 'app.js', ext: 'html js', ignore: [] });
+gulp.task('serve', function (){
+    nodemon({
+        script: 'app.js',
+        env: { 'NODE_ENV': 'development' }
+    });
 });
 
-gulp.task('default', ['jshint', 'app', 'less']);
+// watch files and livereload
+gulp.task('watch', function(){
+    //gulp.watch(paths.html, ['html']);
+    gulp.watch(paths.scripts, ['lint', 'app']);
+    gulp.watch(paths.styles, ['less']);
+    livereload.listen();
+    gulp.watch('public/**').on('change', livereload.changed);
+});
+
+// build
+gulp.task('build', ['vendor', 'app', 'less', 'lint']);
+
+// default gulp task
+gulp.task('default', ['test', 'build', 'serve', 'watch']);

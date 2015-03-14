@@ -1,6 +1,6 @@
 var App = (function () {
     var privateMethod = function (message) {
-        console.log('Message : ' + message);
+        console.log('Messages: ' + message);
     };
 
     var publicMethod = function (text) {
