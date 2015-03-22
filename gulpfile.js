@@ -6,31 +6,37 @@ var gulp = require('gulp'),
     nodemon = require('gulp-nodemon'),
     livereload = require('gulp-livereload');
 
-var paths = {
-    styles: ['./client/stylesheets/*.less'],
-    scripts: ['./client/app/**/*.js'],
-    html: ['./client/app/**/*.html'],
-    tests: ['./tests/*.js']
-};
+var vendorBase = './jspm_packages',
+    paths = {
+        vendorStyles: [
+            vendorBase + '/github/twbs/bootstrap*/css/bootstrap.css',
+            vendorBase + './jspm_packages/npm/font-awesome*/css/font-awesome.css'
+        ],
+        vendorScripts: [
+            vendorBase + '/github/components/jquery*/jquery.js',
+            vendorBase + '/twbs/bootstrap*/js/bootstrap.js'
+        ],
+        styles: ['./client/stylesheets/*.less'],
+        scripts: ['./client/app/**/*.js'],
+        html: ['./client/app/**/*.html'],
+        tests: ['./tests/*.js']
+    };
 
 // vendor
-/*gulp.task('vendor', function () {
-    var jsRegex = (/.*\.js$/i),
-        cssRegex = (/.*\.css$/i);
-
-	gulp.src(mbf({ filter: jsRegex }))
+gulp.task('vendor', function () {
+    gulp.src(paths.vendorScripts)
         .pipe(concat('vendor.js'))
         .pipe(gulp.dest('public/javascripts'));
 
-    gulp.src(mbf({ filter: cssRegex }))
+    gulp.src(paths.vendorStyles)
         .pipe(concat('vendor.css'))
         .pipe(gulp.dest('public/stylesheets'));
 
     // accommodate bootstrap css source mapping
-    gulp.src('./bower_components*//**//*bootstrap.css.map')
+    gulp.src(vendorBase + '/github/twbs/bootstrap*/css/bootstrap.css.map')
         .pipe(concat('bootstrap.css.map'))
         .pipe(gulp.dest('public/stylesheets'));
-});*/
+});
 
 // app
 gulp.task('app', function () {
@@ -80,7 +86,8 @@ gulp.task('watch', function(){
 });
 
 // build
-gulp.task('build', ['app', 'less', 'lint']);
+//gulp.task('build', ['vendor', 'app', 'less', 'lint']);
+gulp.task('build', ['vendor', 'app', 'less', 'lint']);
 
 // default gulp task
 gulp.task('default', ['test', 'build', 'serve', 'watch']);
