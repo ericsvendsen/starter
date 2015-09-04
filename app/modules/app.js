@@ -17,5 +17,7 @@
             .otherwise({
                 redirectTo: '/'
             });
-    });
+    })
+        .value('moment', window.moment)
+        .value('_', window._);
 })();
