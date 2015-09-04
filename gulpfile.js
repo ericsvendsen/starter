@@ -18,27 +18,35 @@ var paths = {
 // clean
 gulp.task('clean', function () {
     return del([
-        'build/**/*'
+        './build/**/*'
     ]);
 });
 
-// vendor
+// vendor scripts
 gulp.task('vendor-js', ['clean'], function () {
     var jsRegex = (/.*\.js$/i);
     return gulp.src(mbf({ filter: jsRegex }))
         .pipe(sourcemaps.init())
         .pipe(concat('vendor.js'))
         .pipe(sourcemaps.write())
-        .pipe(gulp.dest('build/scripts'));
+        .pipe(gulp.dest('./build/scripts'));
 });
 
+// vendor css
 gulp.task('vendor-css', ['clean'], function () {
     return gulp.src('./bower_components/**/*.min.css')
         .pipe(concat('vendor.min.css'))
-        .pipe(gulp.dest('build/stylesheets'));
+        .pipe(gulp.dest('./build/stylesheets'));
 });
 
-gulp.task('vendor-build', ['vendor-js', 'vendor-css']);
+// vendor fonts
+gulp.task('fontawesome', ['clean'], function () {
+    return gulp.src('./bower_components/fontawesome/fonts/**/*.{ttf,woff,woff2,eof,svg}')
+        .pipe(gulp.dest('./build/fonts'));
+});
+gulp.task('vendor-fonts', ['fontawesome']);
+
+gulp.task('vendor-build', ['vendor-js', 'vendor-css', 'vendor-fonts']);
 
 // app
 var appJs = function () {
@@ -47,7 +55,7 @@ var appJs = function () {
         .pipe(concat('app.js'))
         .pipe(sourcemaps.write())
         .pipe(connect.reload())
-        .pipe(gulp.dest('build/scripts'));
+        .pipe(gulp.dest('./build/scripts'));
 };
 gulp.task('app-js', ['clean'], appJs);
 gulp.task('app-js-watch', appJs);
@@ -55,7 +63,7 @@ gulp.task('app-js-watch', appJs);
 var appHtml = function () {
     return gulp.src(paths.html)
         .pipe(connect.reload())
-        .pipe(gulp.dest('build/modules'));
+        .pipe(gulp.dest('./build/modules'));
 };
 gulp.task('app-html', ['clean'], appHtml);
 gulp.task('app-html-watch', appHtml);
@@ -66,7 +74,7 @@ var appCss = function () {
         .pipe(less())
         .pipe(sourcemaps.write())
         .pipe(connect.reload())
-        .pipe(gulp.dest('build/stylesheets'));
+        .pipe(gulp.dest('./build/stylesheets'));
 };
 gulp.task('app-css', ['clean'], appCss);
 gulp.task('app-css-watch', appCss);
@@ -113,7 +121,7 @@ gulp.task('build', ['vendor-build', 'app-build', 'lint'], function () {
 
 // deploy
 gulp.task('deploy', ['build'], function () {
-    return gulp.src('build/**/*')
+    return gulp.src('./build/**/*')
         .pipe(gulp.dest('dist'));
 });
 
