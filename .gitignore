@@ -4,3 +4,7 @@ bower_components
 
 # Editor files
 .idea
+
+# Build and dist directories
+build
+dist

@@ -6,7 +6,11 @@ var gulp = require('gulp'),
     jshint = require('gulp-jshint'),
     karma = require('karma').server,
     sourcemaps = require('gulp-sourcemaps'),
-    del = require('del');
+    del = require('del'),
+    uglify = require('gulp-uglify'),
+    minifyCss = require('gulp-minify-css'),
+    rename = require('gulp-rename'),
+    ngAnnotate = require('gulp-ng-annotate');
 
 var paths = {
     styles: ['./app/stylesheets/*.less'],
@@ -28,6 +32,8 @@ gulp.task('vendor-js', ['clean'], function () {
     return gulp.src(mbf({ filter: jsRegex }))
         .pipe(sourcemaps.init())
         .pipe(concat('vendor.js'))
+        .pipe(uglify())
+        .pipe(rename({ suffix: '.min' }))
         .pipe(sourcemaps.write())
         .pipe(gulp.dest('./build/scripts'));
 });
@@ -53,6 +59,9 @@ var appJs = function () {
     return gulp.src(paths.scripts)
         .pipe(sourcemaps.init())
         .pipe(concat('app.js'))
+        .pipe(ngAnnotate({ single_quotes: true }))
+        .pipe(uglify())
+        .pipe(rename({ suffix: '.min' }))
         .pipe(sourcemaps.write())
         .pipe(connect.reload())
         .pipe(gulp.dest('./build/scripts'));
@@ -72,6 +81,8 @@ var appCss = function () {
     return gulp.src(paths.styles)
         .pipe(sourcemaps.init())
         .pipe(less())
+        .pipe(minifyCss())
+        .pipe(rename({ suffix: '.min' }))
         .pipe(sourcemaps.write())
         .pipe(connect.reload())
         .pipe(gulp.dest('./build/stylesheets'));
@@ -98,7 +109,7 @@ gulp.task('test', function (done) {
 });
 
 // dev server
-gulp.task('connect', function () {
+gulp.task('connect', ['build'], function () {
     connect.server({
         port: 3000,
         root: 'build',
@@ -107,7 +118,7 @@ gulp.task('connect', function () {
 });
 
 // watch files
-gulp.task('watch', function () {
+gulp.task('watch', ['connect'], function () {
     gulp.watch(paths.html, ['app-html-watch']);
     gulp.watch(paths.scripts, ['lint', 'app-js-watch']);
     gulp.watch(paths.styles, ['app-css-watch']);
