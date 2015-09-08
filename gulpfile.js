@@ -30,11 +30,9 @@ gulp.task('clean', function () {
 gulp.task('vendor-js', ['clean'], function () {
     var jsRegex = (/.*\.js$/i);
     return gulp.src(mbf({ filter: jsRegex }))
-        .pipe(sourcemaps.init())
         .pipe(concat('vendor.js'))
         .pipe(uglify())
         .pipe(rename({ suffix: '.min' }))
-        .pipe(sourcemaps.write())
         .pipe(gulp.dest('./build/scripts'));
 });
 
@@ -95,7 +93,7 @@ gulp.task('app-build', ['app-js', 'app-html', 'app-css']);
 // code linting
 gulp.task('lint', function () {
     return gulp.src(paths.scripts)
-        .pipe(jshint(process.env.NODE_ENV === 'development' ? { devel: true, debug: true } : {} ))
+        .pipe(jshint({ devel: true, debug: true }))
         .pipe(jshint.reporter('jshint-stylish'))
         .pipe(jshint.reporter('fail'));
 });
